@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: 01-baseline
+spec:
+  replicas: 10
+  strategy:
+    canary:
+      canaryService: argo-rollouts-canary-service # our created canary service
+      stableService: argo-rollouts-stable-service # our created stable service
+      steps:
+        - setWeight: 30
+        - pause: {}
+        - setWeight: 40
+        - pause: { duration: 10 }
+        - setWeight: 60
+        - pause: { duration: 10 }
+        - setWeight: 80
+        - pause: { duration: 10 }
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: baseline-demo
+  template:
+    metadata:
+      labels:
+        app: baseline-demo
+    spec:
+      containers:
+        - name: baseline-demo
+          image: kostiscodefresh/summer-of-k8s-app:v1
+          # image: kostiscodefresh/summer-of-k8s-app:v2
+          # image: kostiscodefresh/summer-of-k8s-app:v3           
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
