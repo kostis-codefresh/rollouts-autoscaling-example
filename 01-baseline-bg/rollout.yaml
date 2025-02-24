@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: 01-baseline-bg
+spec:
+  replicas: 10
+  strategy:
+    blueGreen:
+      previewService: argo-rollouts-preview-service # our created canary service
+      activeService: argo-rollouts-stable-service # our created stable service
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: baseline-demo
+  template:
+    metadata:
+      labels:
+        app: baseline-demo
+    spec:
+      containers:
+        - name: baseline-demo
+          image: kostiscodefresh/summer-of-k8s-app:v1
+          # image: kostiscodefresh/summer-of-k8s-app:v2
+          # image: kostiscodefresh/summer-of-k8s-app:v3           
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
