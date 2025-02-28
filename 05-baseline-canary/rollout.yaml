@@ -20,14 +20,14 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: baseline-demo
+      app: cost-demo
   template:
     metadata:
       labels:
-        app: baseline-demo
+        app: cost-demo
     spec:
       containers:
-        - name: baseline-demo
+        - name: cost-demo
           image: kostiscodefresh/summer-of-k8s-app:v1
           # image: kostiscodefresh/summer-of-k8s-app:v2
           # image: kostiscodefresh/summer-of-k8s-app:v3           

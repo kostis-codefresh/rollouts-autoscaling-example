@@ -1,9 +1,9 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: 03-as-bg-hpa
+  name: demo-hpa
   labels:
-    app: baseline-demo
+    app: cost-demo
 spec:
   maxReplicas: 10
   metrics:
@@ -17,4 +17,4 @@ spec:
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
-    name: 03-as-bg
+    name: 03-hpa-bg

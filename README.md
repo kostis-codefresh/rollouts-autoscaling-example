@@ -52,7 +52,7 @@ kubectl argo rollouts get rollout 01-baseline-bg
 Start a new color
 
 ```
-kubectl argo rollouts set image 01-baseline-bg baseline-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 01-baseline-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
 ```
 
 Run `kubectl argo rollouts dashboard` and visit `http://localhost:3100/rollouts`
@@ -98,7 +98,7 @@ kubectl argo rollouts get rollout 02-custom-preview-bg
 Start a new color
 
 ```
-kubectl argo rollouts set image 02-custom-preview-bg baseline-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 02-custom-preview-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
 ```
 
 Run `kubectl argo rollouts dashboard` and visit `http://localhost:3100/rollouts`
