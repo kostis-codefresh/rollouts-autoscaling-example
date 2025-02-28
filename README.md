@@ -61,9 +61,9 @@ Run `kubectl argo rollouts dashboard` and visit `http://localhost:3100/rollouts`
 ![double cost for blue/green](pictures/double-cost.png)
 
 
-Notice that now we have double the number of pods. So we pay 2x costs while we are testing the new version
+Notice that now we have double the number of pods. Even though the stable version has 10 pods we also launch 10 more pods for the preview version. **So we pay 2x costs while we are testing the new version**.
 
-Promote the new version with
+Promote the new version with:
 
 ```
 kubectl argo rollouts promote 01-baseline-bg
@@ -76,3 +76,50 @@ Clean up with
 ```
 kubectl delete -f .
 ```
+
+## Example 02 - Custom number for pods for preview version
+
+We can use the `previewReplicaCount` property to change the number of pods that are used for the preview version. Take a look at [02-custom-preview-bg/rollout.yaml#L11](02-custom-preview-bg/rollout.yaml#L11).
+
+We have defined `previewReplicaCount: 5` to use only 5 pods while testing the new version.
+
+
+```
+cd 01-02-custom-preview-bg
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 02-custom-preview-bg
+```
+
+Start a new color
+
+```
+kubectl argo rollouts set image 02-custom-preview-bg baseline-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+Run `kubectl argo rollouts dashboard` and visit `http://localhost:3100/rollouts`
+
+
+![Custom blue green](pictures/custom-blue-green.png)
+
+
+Notice that now we have only 5 pods for preview version instead of 10. **So we cut down our costs for 50% while we are testing the new version**.
+
+Promote the new version with:
+
+```
+kubectl argo rollouts promote 02-custom-preview-bg
+```
+
+Notice that Argo Rollouts correctly launches all 10 pods for the new version after promotion.
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
