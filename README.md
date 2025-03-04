@@ -316,3 +316,52 @@ Clean up with
 kubectl delete -f .
 ```
 
+## Example 06 - Canary without Traffic manager.
+
+
+If you don't use a traffic manager Argo Rollouts will use the pod count
+to split traffic between preview version and stable version. This means
+that as the traffic advances the number of preview pods go up and the number
+of stable pods go down.
+
+```
+cd 06-canary-wtm
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 06-canary-wtm
+```
+
+Start a new color
+
+```
+kubectl argo rollouts set image 06-canary-wtm cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see the following in the different phases of the canary.
+
+![Without traffic manager](pictures/wtm.png).
+
+The canary pods increase with traffic while stable pods decrease with the inverse ration. The number of pods is always constant.
+
+Promote the canary multiple times with:
+
+```
+kubectl argo rollouts promote 06-canary-wtm
+```
+
+After promotion has finished the old pods are destroyed and we are back to 1x cost.
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
+**While this method matches expected user behavior it has several disadvantages**. Apart from missing all the advanced features of a traffic manager, it is a bit more risky in the case of an abort as stable pods are less in number and will need to be scaled back up again.
+
+See the next example on how to replicate this behavior and still use a traffic manager.
+

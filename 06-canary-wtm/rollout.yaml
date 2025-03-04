@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: 05-baseline-canary
+  name: 06-canary-wtm
 spec:
   replicas: 10
   strategy:
