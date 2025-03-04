@@ -7,6 +7,9 @@ This simple behavior can affect the cost of the infrastructure especially in the
 
 In this repository we show several approaches of minimizing the cost of Progressive Delivery.
 
+* TOC
+{:toc}
+
 ## Prerequisites
 
 Get access to a local cluster such as k3s, docker-for-desktop, k3d etc
