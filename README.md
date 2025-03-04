@@ -213,7 +213,7 @@ kubectl delete -f .
 
 In this example we have an [autoscaler](03-hpa-bg-custom/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors CPU and memory usage for our pods. 
 
-We have defined `previewReplicaCount: 3` to use only 3 pods while testing the new version.
+We have also defined `previewReplicaCount: 3` to use only 3 pods while testing the new version.
 
 
 ```
@@ -245,16 +245,17 @@ Start a new color
 kubectl argo rollouts set image 04-hpa-bg-custom cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
 ```
 
-If you visit the Argo Rollouts dashboard you will see the following
+If you visit the Argo Rollouts dashboard you will see the following 
 
-![Blue/Green with autoscaling](pictures/blue-green-as-custom.png)
+![Blue/Green with autoscaling and custom replicas](pictures/blue-green-as-custom.png)
 
+Notice that the new version has only 3 pods as we defined in `previewReplicaCount`. **So previewReplicaCount always overrides the current autoscaling decision**.
 
-Notice that the new version has as many pods as the autoscaler had when we started the deployment. **So if a Blue/Green deployment starts under heavy traffic the preview pods will be able to handle the load that was present at that point in time**.
+Also if you continue the load testing, Argo Rollouts will launch more only for the stable version. The preview version will always have 3 pods. 
 
-Also if you continue the load testing, Argo Rollouts will launch more pods for both the preview and stable replicasets.
+![Blue/Green with autoscaling and custom replicas 2](pictures/blue-green-as-custom-2.png)
 
-![Blue/Green with autoscaling 2](pictures/blue-green-as-custom-git s2.png)
+**Use previewReplicaCount with caution as it will always take effect regardless of the current load and what the autoscaler does**.
 
 Promote the new version with:
 
