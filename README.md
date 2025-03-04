@@ -251,7 +251,7 @@ If you visit the Argo Rollouts dashboard you will see the following
 
 Notice that the new version has only 3 pods as we defined in `previewReplicaCount`. **So previewReplicaCount always overrides the current autoscaling decision**.
 
-Also if you continue the load testing, Argo Rollouts will launch more only for the stable version. The preview version will always have 3 pods. 
+Also if you continue the load testing, Argo Rollouts will launch more pods only for the stable version. The preview version will always have 3 pods. 
 
 ![Blue/Green with autoscaling and custom replicas 2](pictures/blue-green-as-custom-2.png)
 
