@@ -7,8 +7,10 @@ This simple behavior can affect the cost of the infrastructure especially in the
 
 In this repository we show several approaches of minimizing the cost of Progressive Delivery.
 
-* TOC
-{:toc}
+Table of contents
+
+1. [Prerequisites](#prerequisites)
+1. [Example 01 - Base case for Blue/Green](#example-01---base-case-for-bluegreen)
 
 ## Prerequisites
 
@@ -56,7 +58,7 @@ For siege
 apt-get install siege
 ```
 
-## Inspecting the rollouts
+### Inspecting the rollouts
 
 You can use the Argo Rollouts CLI to inspect your rollouts or run
 
