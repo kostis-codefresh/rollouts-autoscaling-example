@@ -6,8 +6,11 @@ spec:
   replicas: 10
   strategy:
     canary:
-      canaryService: argo-rollouts-canary-service 
-      stableService: argo-rollouts-stable-service 
+      canaryService: rollout-canary-preview 
+      stableService: rollout-canary-stable  
+      trafficRouting:
+        traefik:
+          weightedTraefikServiceName: traefik-service       
       steps:
         - setWeight: 20
         - pause: {}
