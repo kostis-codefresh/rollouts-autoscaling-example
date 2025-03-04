@@ -26,6 +26,17 @@ chmod +x ./kubectl-argo-rollouts-linux-amd64
 sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
 ```
 
+Install the Metric Server for all HPA examples
+
+```
+cd metrics-072
+kubectl apply -f components.yaml
+(Wait 2 minutes)
+kubectl top nodes
+```
+
+The last command should show you metric for your nodes.
+
 Install Traefik 2.x for the all the canary examples
 
 ```
@@ -33,6 +44,16 @@ helm repo add traefik https://traefik.github.io/charts
 helm repo update
 helm install traefik traefik/traefik --version 27.0.2
 ```
+
+## Inspecting the rollouts
+
+You can use the Argo Rollouts CLI to inspect your rollouts or run
+
+```
+kubectl argo rollouts dashboard
+```
+
+And then visit `http://localhost:3100/rollouts` to see the Argo Rollouts dashboard.
 
 ## Example 01 - Base case for Blue/Green
 
