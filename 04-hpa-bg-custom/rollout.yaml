@@ -7,7 +7,7 @@ spec:
     blueGreen:
       previewService: argo-rollouts-preview-service # our created canary service
       activeService: argo-rollouts-stable-service # our created stable service
-      previewReplicaCount: 5
+      previewReplicaCount: 3
       autoPromotionEnabled: false
   revisionHistoryLimit: 2
   selector:

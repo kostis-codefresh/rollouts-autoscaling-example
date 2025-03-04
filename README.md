@@ -168,6 +168,9 @@ kubectl argo rollouts get rollout 03-hpa-bg
 ```
 
 Notice that we only have 1 pod. 
+
+Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
+
 Generate some traffic with
 
 ```
@@ -197,7 +200,66 @@ Also if you continue the load testing, Argo Rollouts will launch more pods for b
 Promote the new version with:
 
 ```
-kubectl argo rollouts promote 02-custom-preview-bg
+kubectl argo rollouts promote 03-hpa-bg
+```
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
+## Example 04 - Blue/Green with autoscaling and custom number of pods
+
+In this example we have an [autoscaler](03-hpa-bg-custom/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors CPU and memory usage for our pods. 
+
+We have defined `previewReplicaCount: 3` to use only 3 pods while testing the new version.
+
+
+```
+cd 04-hpa-bg-custom
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 04-hpa-bg-custom
+```
+
+Notice that we only have 1 pod. 
+Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
+
+Generate some traffic with
+
+```
+kubectl port-forward svc/argo-rollouts-stable-service 8000:80
+siege -c 200 -r 100 -b -v http://localhost:8000 (run this 2-3 times)
+```
+
+Wait until the autoscaler creates more pods (for example 8).
+
+Start a new color
+
+```
+kubectl argo rollouts set image 04-hpa-bg-custom cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see the following
+
+![Blue/Green with autoscaling](pictures/blue-green-as-custom.png)
+
+
+Notice that the new version has as many pods as the autoscaler had when we started the deployment. **So if a Blue/Green deployment starts under heavy traffic the preview pods will be able to handle the load that was present at that point in time**.
+
+Also if you continue the load testing, Argo Rollouts will launch more pods for both the preview and stable replicasets.
+
+![Blue/Green with autoscaling 2](pictures/blue-green-as-custom-git s2.png)
+
+Promote the new version with:
+
+```
+kubectl argo rollouts promote 04-hpa-bg-custom
 ```
 
 Clean up with

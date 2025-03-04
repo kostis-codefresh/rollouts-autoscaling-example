@@ -9,12 +9,6 @@ spec:
   metrics:
     - type: Resource
       resource:
-        name: cpu
-        target:
-          averageUtilization: 20
-          type: Utilization
-    - type: Resource
-      resource:
         name: memory
         target:
           type: AverageValue
@@ -23,4 +17,4 @@ spec:
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
-    name: 03-hpa-bg
+    name: 04-hpa-bg-custom
