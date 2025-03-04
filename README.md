@@ -11,6 +11,11 @@ Table of contents
 
 1. [Prerequisites](#prerequisites)
 1. [Example 01 - Base case for Blue/Green](#example-01---base-case-for-bluegreen)
+1. [Example 02 - Custom number for pods for preview version](#example-02---custom-number-for-pods-for-preview-version)
+1. [Example 03 - Blue/Green with autoscaling](#example-03---bluegreen-with-autoscaling)
+1. [Example 04 - Blue/Green with autoscaling and custom number of pods](#example-04---bluegreen-with-autoscaling-and-custom-number-of-pods)
+1. [Example 05 - Base case for Canary](#example-05---base-case-for-canary)
+1. [Example 06 - Canary without Traffic manager](#example-06---canary-without-traffic-manager)
 
 ## Prerequisites
 
