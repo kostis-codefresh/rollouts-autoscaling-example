@@ -68,7 +68,7 @@ And then visit `http://localhost:3100/rollouts` to see the Argo Rollouts dashboa
 This shows a Blue/Green example with default options
 
 ```
-cd 01-baseling-bg
+cd 01-baseline-bg
 kubectl apply -f .
 ```
 
@@ -269,5 +269,48 @@ Clean up with
 kubectl delete -f .
 ```
 
+## Example 05 - Base case for Canary
 
+This shows a Canary example with default options
+
+```
+cd 05-baseline-canary
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 05-baseline-canary
+```
+
+Start a new color
+
+```
+kubectl argo rollouts set image 05-baseline-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see the following
+
+![20 percent](pictures/20-percent.png).
+
+The canary pods are always the same ratio as current traffic.
+Promote the rollout multiple times with 
+
+```
+kubectl argo rollouts promote 05-baseline-canary
+```
+
+![70 percent](pictures/70-percent.png).
+
+You can see that at all stage we pay for the stable version of pods PLUS the canary ones.  **So when the canary is at 80%-90%-100% we pay almost 2x the costs to test the new version.**
+
+
+After promotion has finished the old pods are destroyed and we are back to 1x cost.
+
+Clean up with
+
+```
+kubectl delete -f .
+```
 
