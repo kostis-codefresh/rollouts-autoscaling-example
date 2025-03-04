@@ -45,6 +45,14 @@ helm repo update
 helm install traefik traefik/traefik --version 27.0.2
 ```
 
+Install a load testing tool such as [siege](https://github.com/JoeDog/siege), [hey](https://github.com/rakyll/hey), [bombardier](https://github.com/codesenberg/bombardier), [k6s](https://github.com/grafana/k6), [locust](https://locust.io/), [gatling](https://gatling.io/) etc.
+
+For siege
+
+```
+apt-get install siege
+```
+
 ## Inspecting the rollouts
 
 You can use the Argo Rollouts CLI to inspect your rollouts or run
@@ -76,8 +84,7 @@ Start a new color
 kubectl argo rollouts set image 01-baseline-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
 ```
 
-Run `kubectl argo rollouts dashboard` and visit `http://localhost:3100/rollouts`
-
+If you visit the Argo Rollouts dashboard you will see the following
 
 ![double cost for blue/green](pictures/double-cost.png)
 
@@ -98,6 +105,8 @@ Clean up with
 kubectl delete -f .
 ```
 
+
+
 ## Example 02 - Custom number for pods for preview version
 
 We can use the `previewReplicaCount` property to change the number of pods that are used for the preview version. Take a look at [02-custom-preview-bg/rollout.yaml#L11](02-custom-preview-bg/rollout.yaml#L11).
@@ -106,7 +115,7 @@ We have defined `previewReplicaCount: 5` to use only 5 pods while testing the ne
 
 
 ```
-cd 01-02-custom-preview-bg
+cd 02-custom-preview-bg
 kubectl apply -f .
 ```
 
@@ -122,8 +131,7 @@ Start a new color
 kubectl argo rollouts set image 02-custom-preview-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
 ```
 
-Run `kubectl argo rollouts dashboard` and visit `http://localhost:3100/rollouts`
-
+If you visit the Argo Rollouts dashboard you will see the following
 
 ![Custom blue green](pictures/custom-blue-green.png)
 
@@ -143,4 +151,60 @@ Clean up with
 ```
 kubectl delete -f .
 ```
+
+## Example 03 - Blue/Green with autoscaling
+
+In this example we have an [autoscaler](03-hpa-bg/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors CPU and memory usage for our pods.
+
+```
+cd 03-hpa-bg
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 03-hpa-bg
+```
+
+Notice that we only have 1 pod. 
+Generate some traffic with
+
+```
+kubectl port-forward svc/argo-rollouts-stable-service 8000:80
+siege -c 200 -r 50 -b -v http://localhost:8000
+```
+
+Wait until the autoscaler creates more pods.
+
+Start a new color
+
+```
+kubectl argo rollouts set image 03-hpa-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see the following
+
+![Blue/Green with autoscaling](pictures/blue-green-as.png)
+
+
+Notice that the new version has as many pods as the autoscaler had when we started the deployment. **So if a Blue/Green deployment starts under heavy traffic the preview pods will be able to handle the load that was present at that point in time**.
+
+Also if you continue the load testing, Argo Rollouts will launch more pods for both the preview and stable replicasets.
+
+![Blue/Green with autoscaling 2](pictures/blue-green-as-2.png)
+
+Promote the new version with:
+
+```
+kubectl argo rollouts promote 02-custom-preview-bg
+```
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
+
 
