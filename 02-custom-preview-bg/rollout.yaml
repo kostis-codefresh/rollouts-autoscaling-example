@@ -6,8 +6,8 @@ spec:
   replicas: 10
   strategy:
     blueGreen:
-      previewService: argo-rollouts-preview-service # our created canary service
-      activeService: argo-rollouts-stable-service # our created stable service
+      previewService: argo-rollouts-preview-service 
+      activeService: argo-rollouts-stable-service 
       previewReplicaCount: 5
       autoPromotionEnabled: false
   revisionHistoryLimit: 2
