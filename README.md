@@ -294,7 +294,7 @@ Wait for all pods to be healthy
 kubectl argo rollouts get rollout 05-baseline-canary
 ```
 
-Start a new color
+Start a new canary deployment:
 
 ```
 kubectl argo rollouts set image 05-baseline-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
@@ -345,7 +345,7 @@ Wait for all pods to be healthy
 kubectl argo rollouts get rollout 06-canary-wtm
 ```
 
-Start a new color
+Start a new canary deployment:
 
 ```
 kubectl argo rollouts set image 06-canary-wtm cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
@@ -363,7 +363,7 @@ Promote the canary multiple times with:
 kubectl argo rollouts promote 06-canary-wtm
 ```
 
-After promotion has finished the old pods are destroyed and we are back to 1x cost.
+After promotion has finished the old pods are destroyed and only the new pods remain.
 
 Clean up with
 
@@ -374,4 +374,49 @@ kubectl delete -f .
 **While this method matches expected user behavior it has several disadvantages**. Apart from missing all the advanced features of a traffic manager, it is a bit more risky in the case of an abort as stable pods are less in number and will need to be scaled back up again.
 
 See the next example on how to replicate this behavior and still use a traffic manager.
+
+## Example 07 - Canary with dynamic scaling
+
+If you use a traffic manager and like the scaling behavior of the previous example
+where stable pods are reduced when preview pods are increased then this can be done 
+with the `dynamicStableScale` property available to canaries.
+
+```
+cd 07-dynamic-canary
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 07-dynamic-canary
+```
+
+Start a new canary deployment
+
+```
+kubectl argo rollouts set image 07-dynamic-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see again a constant number of pods. When new canary pods are launched the same the following in the different phases of the canary.
+
+![Dynamic](pictures/dynamic-canary.png).
+
+The canary pods increase with traffic while stable pods decrease with the inverse ration. The number of pods is always constant.
+
+Promote the canary multiple times with:
+
+```
+kubectl argo rollouts promote 07-dynamic-canary
+```
+
+After promotion has finished the old pods are destroyed and only the new pods remain.
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
+**This means you can keep a constant cost for your cluster even when using a canary with a traffic manager**.
 
