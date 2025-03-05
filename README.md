@@ -514,14 +514,13 @@ Port forward with:
 
 ```
 kubectl port-forward svc/rollout-canary-preview 8000:80
-siege -c 200 -r 50 -b -v http://localhost:8000
 ```
 
 Visit `http://localhost:8000` in your browser and click the "refresh"
 button until used memory shows about 50MB. 
 
 Wait until the autoscaler creates more pods. You can monitor HPA with
-`watch kubectl describe hpa`. At some point you will have 4 pods your application.
+`watch kubectl describe hpa`. At some point you will have 4 pods in your application.
 
 Start a new canary deployment
 
@@ -533,14 +532,14 @@ If you visit the Argo Rollouts dashboard you will see the following
 
 ![Canary autoscaling start](pictures/canary-as-start.png)
 
-A single pod has been launched and get 20% of the traffic. Promote the canary once
+A single pod has been launched and gets 20% of the traffic. Promote the canary once
 with 
 
 ```
 kubectl argo rollouts promote 09-hpa-canary
 ```
 
-Now the canary is at 50%. You will see that Argo Rollout will now launch 20 canary pods since the stable version has 4.
+Now the canary is at 50%. You will see that Argo Rollouts will now launch 2 canary pods since the stable version has 4.
 
 ![Start with 50 per cent](pictures/instant-50.png)
 
@@ -550,7 +549,7 @@ pods in order to keep the canary traffic always at 50%.
 - Increase memory gradually to 80MB. You should have 8 stable pods and 4 canary pods
 - Increase memory gradually to 120MB. You should have 10 stable pods and 5 canary pods
 
-![Canary follows scaling](pictures/canary-as-2.png)
+![Canary follows scaling](pictures/canary-as2.png)
 
 **So if an autoscaler is active Argo Rollouts will constantly change the preview pods to match the required canary percentage as the stable pods go up or down.**.
 
