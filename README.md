@@ -17,6 +17,7 @@ Table of contents
 1. [Example 05 - Base case for Canary](#example-05---base-case-for-canary)
 1. [Example 06 - Canary without Traffic manager](#example-06---canary-without-traffic-manager)
 1. [Example 07 - Canary with dynamic scaling](#example-07---canary-with-dynamic-scaling)
+1. [Example 08 - Canary with decoupled traffic split](#example-08---canary-with-decoupled-traffic-split)
 
 ## Prerequisites
 
