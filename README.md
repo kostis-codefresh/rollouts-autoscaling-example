@@ -166,7 +166,7 @@ kubectl delete -f .
 
 ## Example 03 - Blue/Green with autoscaling
 
-In this example we have an [autoscaler](03-hpa-bg/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors CPU and memory usage for our pods.
+In this example we have an [autoscaler](03-hpa-bg/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors memory usage for our pods.
 
 ```
 cd 03-hpa-bg
@@ -223,7 +223,7 @@ kubectl delete -f .
 
 ## Example 04 - Blue/Green with autoscaling and custom number of pods
 
-In this example we have an [autoscaler](03-hpa-bg-custom/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors CPU and memory usage for our pods. 
+In this example we have an [autoscaler](03-hpa-bg-custom/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors memory usage for our pods. 
 
 We have also defined `previewReplicaCount: 3` to use only 3 pods while testing the new version.
 
@@ -470,7 +470,7 @@ kubectl argo rollouts set image 08-decoupled-canary cost-demo=docker.io/kostisco
 
 If you visit the Argo Rollouts dashboard you will see again a constant number of pods. When new canary pods are launched the same the following in the different phases of the canary.
 
-![Decoupled canary](pictures/decoupled-canary.png).
+![Decoupled canary](pictures/decoupled-canary.png)
 
 When we reach 100% of traffic we use 5 pods instead of 10. **This cuts our costs by 50% compared to not using a traffic provider**.
 
@@ -490,3 +490,31 @@ kubectl delete -f .
 
 **Using a traffic manager is the most flexible option as it allows to define exactly the costs for your preview pods**.
 
+
+## Example 09 - Canary with autoscaling
+
+In this example we have an [autoscaler](09-hpa-canary/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors memory usage for our pods.
+
+```
+cd 03-hpa-bg
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 03-hpa-bg
+```
+
+Notice that we only have 1 pod. 
+
+Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
+
+Generate some traffic with
+
+```
+kubectl port-forward svc/rollout-canary-preview 8000:80
+siege -c 200 -r 50 -b -v http://localhost:8000
+```
+
+Wait until the autoscaler creates more pods.
