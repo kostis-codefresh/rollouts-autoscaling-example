@@ -496,14 +496,14 @@ kubectl delete -f .
 In this example we have an [autoscaler](09-hpa-canary/hpa.yaml) for our Rollout. It defines minimum pods as 1 and maximum as 10. It monitors memory usage for our pods.
 
 ```
-cd 03-hpa-bg
+cd 09-hpa-canary
 kubectl apply -f .
 ```
 
 Wait for all pods to be healthy
 
 ```
-kubectl argo rollouts get rollout 03-hpa-bg
+kubectl argo rollouts get rollout 09-hpa-canary
 ```
 
 Notice that we only have 1 pod. 
@@ -518,3 +518,32 @@ siege -c 200 -r 50 -b -v http://localhost:8000
 ```
 
 Wait until the autoscaler creates more pods.
+
+Start a new canary deployment
+
+```
+kubectl argo rollouts set image 09-hpa-canary cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see the following
+
+![Blue/Green with autoscaling](pictures/canary-as.png)
+
+
+Notice that the new version has as many pods as the autoscaler had when we started the deployment. **So if a Blue/Green deployment starts under heavy traffic the preview pods will be able to handle the load that was present at that point in time**.
+
+Also if you continue the load testing, Argo Rollouts will launch more pods for both the preview and stable replicasets.
+
+![Blue/Green with autoscaling 2](pictures/blue-green-as-2.png)
+
+Promote the new version with:
+
+```
+kubectl argo rollouts promote 09-hpa-canary
+```
+
+Clean up with
+
+```
+kubectl delete -f .
+```

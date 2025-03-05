@@ -18,3 +18,16 @@ spec:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
     name: 09-hpa-canary
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15    
