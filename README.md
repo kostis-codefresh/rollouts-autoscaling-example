@@ -421,3 +421,71 @@ kubectl delete -f .
 
 **This means you can keep a constant cost for your cluster even when using a canary with a traffic manager**.
 
+## Example 08 - Canary with decoupled traffic split
+
+The big advantage of using a traffic provider is that you can decouple completely the number of preview pods with the amount of traffic they get. 
+
+Take a look at [the decoupled rollout](08-decoupled-canary/rollout.yaml) for an example. Here we define arbitrary traffic percentages.
+
+```yaml
+steps:
+- setWeight: 20
+- setCanaryScale: 
+    replicas: 1
+- pause: {}
+- setWeight: 50
+- setCanaryScale: 
+    replicas: 3
+- pause: {}
+- setWeight: 90
+- setCanaryScale: 
+    replicas: 5
+- pause: {}
+- setWeight: 100
+- setCanaryScale:        
+    replicas: 8
+```
+
+The first pod will get 20% of traffic (instead of the default 10%). Then 3 preview pods will get 50% of traffic (instead of the default 30%). This way you can do any possible combination between the number of pods and their traffic.
+
+You can always switch back to the default behavior by using the `matchTrafficWeight: true` property. 
+
+```
+cd 08-decoupled-canary
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 08-decoupled-canary
+```
+
+Start a new canary deployment
+
+```
+kubectl argo rollouts set image 08-decoupled-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see again a constant number of pods. When new canary pods are launched the same the following in the different phases of the canary.
+
+![Decoupled canary](pictures/decoupled-canary.png).
+
+When we reach 100% of traffic we use 5 pods instead of 10. **This cuts our costs by 50% compared to not using a traffic provider**.
+
+Promote the canary multiple times with:
+
+```
+kubectl argo rollouts promote 08-decoupled-canary
+```
+
+After promotion has finished the old pods are destroyed and only the new pods remain.
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
+**Using a traffic manager is the most flexible option as it allows to define exactly the costs for your preview pods**.
+
