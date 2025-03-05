@@ -510,14 +510,18 @@ Notice that we only have 1 pod.
 
 Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
 
-Generate some traffic with
+Port forward with:
 
 ```
 kubectl port-forward svc/rollout-canary-preview 8000:80
 siege -c 200 -r 50 -b -v http://localhost:8000
 ```
 
-Wait until the autoscaler creates more pods.
+Visit `http://localhost:8000` in your browser and click the "refresh"
+button until used memory shows about 50MB. 
+
+Wait until the autoscaler creates more pods. You can monitor HPA with
+`watch kubectl describe hpa`. At some point you will have 4 pods your application.
 
 Start a new canary deployment
 
@@ -527,20 +531,36 @@ kubectl argo rollouts set image 09-hpa-canary cost-demo=ghcr.io/kostis-codefresh
 
 If you visit the Argo Rollouts dashboard you will see the following
 
-![Blue/Green with autoscaling](pictures/canary-as.png)
+![Canary autoscaling start](pictures/canary-as-start.png)
 
-
-Notice that the new version has as many pods as the autoscaler had when we started the deployment. **So if a Blue/Green deployment starts under heavy traffic the preview pods will be able to handle the load that was present at that point in time**.
-
-Also if you continue the load testing, Argo Rollouts will launch more pods for both the preview and stable replicasets.
-
-![Blue/Green with autoscaling 2](pictures/blue-green-as-2.png)
-
-Promote the new version with:
+A single pod has been launched and get 20% of the traffic. Promote the canary once
+with 
 
 ```
 kubectl argo rollouts promote 09-hpa-canary
 ```
+
+Now the canary is at 50%. You will see that Argo Rollout will now launch 20 canary pods since the stable version has 4.
+
+![Start with 50 per cent](pictures/instant-50.png)
+
+Now you can keep increasing memory and see that Argo Rollouts constantly launches new
+pods in order to keep the canary traffic always at 50%.
+
+- Increase memory gradually to 80MB. You should have 8 stable pods and 4 canary pods
+- Increase memory gradually to 120MB. You should have 10 stable pods and 5 canary pods
+
+![Canary follows scaling](pictures/canary-as-2.png)
+
+**So if an autoscaler is active Argo Rollouts will constantly change the preview pods to match the required canary percentage as the stable pods go up or down.**.
+
+Promote the canary multiple times with:
+
+```
+kubectl argo rollouts promote 09-hpa-canary
+```
+
+After promotion has finished the old pods are destroyed and only the new pods remain.
 
 Clean up with
 
