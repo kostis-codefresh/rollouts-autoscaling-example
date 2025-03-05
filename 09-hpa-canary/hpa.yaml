@@ -12,7 +12,7 @@ spec:
         name: memory
         target:
           type: AverageValue
-          averageValue: 64Mi      
+          averageValue: 32Mi      
   minReplicas: 1
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
