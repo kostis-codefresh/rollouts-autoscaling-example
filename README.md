@@ -19,6 +19,8 @@ Table of contents
 1. [Example 07 - Canary with dynamic scaling](#example-07---canary-with-dynamic-scaling)
 1. [Example 08 - Canary with decoupled traffic split](#example-08---canary-with-decoupled-traffic-split)
 1. [Example 09 - Canary with autoscaling](#example-09---canary-with-autoscaling)
+1. [Example 10 - Canary with autoscaling and decoupled traffic split](#example-10---canary-with-autoscaling-and-decoupled-traffic-split)
+
 
 ## Prerequisites
 
@@ -568,7 +570,7 @@ Clean up with
 kubectl delete -f .
 ```
 
-## Example 10 - Canary with autoscaling
+## Example 10 - Canary with autoscaling and decoupled traffic split
 
 In this example we use both an autoscaler and a specific number of pods
 in each canary step (instead of the default weight-based percentage).
