@@ -9,7 +9,7 @@ In this repository we show several approaches of minimizing the cost of Progress
 
 ## The example application
 
-For all example we use a [simple GoLang application](source-code). This application
+For all examples we use a [simple GoLang application](source-code). This application
 has the following behavior
 
 * Every time a call is made to `/` it reserves 1MB of memory
@@ -61,7 +61,7 @@ kubectl apply -f components.yaml
 kubectl top nodes
 ```
 
-The last command should show you metric for your nodes.
+The last command should show you metrics for your nodes.
 
 Install Traefik 2.x for the all the canary examples
 
@@ -73,11 +73,8 @@ helm install traefik traefik/traefik --version 27.0.2
 
 Install a load testing tool such as [siege](https://github.com/JoeDog/siege), [hey](https://github.com/rakyll/hey), [bombardier](https://github.com/codesenberg/bombardier), [k6s](https://github.com/grafana/k6), [locust](https://locust.io/), [gatling](https://gatling.io/) etc.
 
-For siege
+You can also use your browser to increase the memory of the example in order to trigger the autoscaler.
 
-```
-apt-get install siege
-```
 
 ### Inspecting the rollouts
 
@@ -107,13 +104,12 @@ kubectl argo rollouts get rollout 01-baseline-bg
 Start a new color
 
 ```
-kubectl argo rollouts set image 01-baseline-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 01-baseline-bg cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see the following
 
 ![double cost for blue/green](pictures/double-cost.png)
-
 
 Notice that now we have double the number of pods. Even though the stable version has 10 pods we also launch 10 more pods for the preview version. **So we pay 2x costs while we are testing the new version**.
 
@@ -154,7 +150,7 @@ kubectl argo rollouts get rollout 02-custom-preview-bg
 Start a new color
 
 ```
-kubectl argo rollouts set image 02-custom-preview-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 02-custom-preview-bg cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see the following
@@ -197,19 +193,20 @@ Notice that we only have 1 pod.
 
 Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
 
-Generate some traffic with
+Port forward with:
 
 ```
 kubectl port-forward svc/argo-rollouts-stable-service 8000:80
-siege -c 200 -r 50 -b -v http://localhost:8000
 ```
+
+And then visit `http://localhost:8000` multiple times to reserve more memory.
 
 Wait until the autoscaler creates more pods.
 
 Start a new color
 
 ```
-kubectl argo rollouts set image 03-hpa-bg cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 03-hpa-bg cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see the following
@@ -219,7 +216,7 @@ If you visit the Argo Rollouts dashboard you will see the following
 
 Notice that the new version has as many pods as the autoscaler had when we started the deployment. **So if a Blue/Green deployment starts under heavy traffic the preview pods will be able to handle the load that was present at that point in time**.
 
-Also if you continue the load testing, Argo Rollouts will launch more pods for both the preview and stable replicasets.
+Also if you continue reserving memory, Argo Rollouts will launch more pods for both the preview and stable replicasets.
 
 ![Blue/Green with autoscaling 2](pictures/blue-green-as-2.png)
 
@@ -256,19 +253,19 @@ kubectl argo rollouts get rollout 04-hpa-bg-custom
 Notice that we only have 1 pod. 
 Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
 
-Generate some traffic with
+Port forward with:
 
 ```
 kubectl port-forward svc/argo-rollouts-stable-service 8000:80
-siege -c 200 -r 100 -b -v http://localhost:8000 (run this 2-3 times)
 ```
 
+And then visit `http://localhost:8000` multiple times to reserve more memory.
 Wait until the autoscaler creates more pods (for example 8).
 
 Start a new color
 
 ```
-kubectl argo rollouts set image 04-hpa-bg-custom cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 04-hpa-bg-custom cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see the following 
@@ -313,7 +310,7 @@ kubectl argo rollouts get rollout 05-baseline-canary
 Start a new canary deployment:
 
 ```
-kubectl argo rollouts set image 05-baseline-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 05-baseline-canary cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see the following
@@ -364,7 +361,7 @@ kubectl argo rollouts get rollout 06-canary-wtm
 Start a new canary deployment:
 
 ```
-kubectl argo rollouts set image 06-canary-wtm cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 06-canary-wtm cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see the following in the different phases of the canary.
@@ -411,7 +408,7 @@ kubectl argo rollouts get rollout 07-dynamic-canary
 Start a new canary deployment
 
 ```
-kubectl argo rollouts set image 07-dynamic-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 07-dynamic-canary cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see again a constant number of pods. When new canary pods are launched the same the following in the different phases of the canary.
@@ -479,7 +476,7 @@ kubectl argo rollouts get rollout 08-decoupled-canary
 Start a new canary deployment
 
 ```
-kubectl argo rollouts set image 08-decoupled-canary cost-demo=docker.io/kostiscodefresh/summer-of-k8s-app:v2
+kubectl argo rollouts set image 08-decoupled-canary cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
 ```
 
 If you visit the Argo Rollouts dashboard you will see again a constant number of pods. When new canary pods are launched the same the following in the different phases of the canary.
