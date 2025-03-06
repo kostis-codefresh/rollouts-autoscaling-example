@@ -7,7 +7,18 @@ This simple behavior can affect the cost of the infrastructure especially in the
 
 In this repository we show several approaches of minimizing the cost of Progressive Delivery.
 
-Table of contents
+## The example application
+
+For all example we use a [simple GoLang application](source-code). This application
+has the following behavior
+
+* Every time a call is made to `/` it reserves 1MB of memory
+* If you call `/clear` it releases all memory reserved so far
+
+You can use this technique to trigger [the autoscaler](https://argo-rollouts.readthedocs.io/en/stable/features/hpa-support/) in all examples that use [HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+by simulating a pod that requires additional memory.
+
+## Table of contents
 
 1. [Prerequisites](#prerequisites)
 1. [Example 01 - Base case for Blue/Green](#example-01---base-case-for-bluegreen)
