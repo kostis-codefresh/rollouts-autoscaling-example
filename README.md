@@ -567,3 +567,86 @@ Clean up with
 ```
 kubectl delete -f .
 ```
+
+## Example 10 - Canary with autoscaling
+
+In this example we use both an autoscaler and a specific number of pods
+in each canary step (instead of the default weight-based percentage).
+
+```
+cd 10-hpa-canary-decoupled
+kubectl apply -f .
+```
+
+Wait for all pods to be healthy
+
+```
+kubectl argo rollouts get rollout 10-hpa-canary-decoupled
+```
+
+Notice that we only have 1 pod. 
+
+Wait for autoscaler to be ready. Run `kubectl describe hpa` and wait until you see `ScalingActive   True` 
+
+Port forward with:
+
+```
+kubectl port-forward svc/rollout-canary-preview 8000:80
+```
+
+
+
+Wait until the autoscaler creates more pods. You can monitor HPA with
+`watch kubectl describe hpa`. 
+
+Start a new canary deployment
+
+```
+kubectl argo rollouts set image 10-hpa-canary-decoupled cost-demo=ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2
+```
+
+If you visit the Argo Rollouts dashboard you will see the following
+
+![Canary full start](pictures/full-20.png)
+
+A single pod has been launched and gets 20% of the traffic. Promote the canary once
+with 
+
+```
+kubectl argo rollouts promote 10-hpa-canary-decoupled
+```
+
+Now the canary is at 50%. Canary pods will be exactly 3 because this is what you defined in the Rollout spec.
+
+Visit `http://localhost:8000` in your browser and click the "refresh"
+button to consume more memory. 
+
+Now you can keep increasing memory and see that only the stable pods increase. 
+The canary pods are in the exact number that you defined in the Rollout Specification.
+Notice however that the autoscaler looks into both canary and stable pods in order to take a decision.
+
+- Increase memory gradually to 80MB. You should have 4 stable pods and 3 canary pods
+- Increase memory gradually to 100MB. You should have 8 stable pods and 3 canary pods
+- Increase memory gradually to 120MB. You should have 10 stable pods and 3 canary pods
+
+![Autoscaler only tampers with stable pods](pictures/full-canary-as.png)
+
+**So if an autoscaler is active Argo Rollouts and you have defined explicitly the number of canary pods, the autoscaler will only tamper with stable pods**.
+
+Promote the canary multiple times with:
+
+```
+kubectl argo rollouts promote 10-hpa-canary-decoupled
+```
+
+After promotion has finished the old pods are destroyed and only the new pods remain.
+
+Clean up with
+
+```
+kubectl delete -f .
+```
+
+## Final notes
+
+* If you use the `dynamicStableScale: true` property in a Canary with an autoscaler, the property will take precedence and kill your stable pods as the canary progresses. This is probably not what you want.
