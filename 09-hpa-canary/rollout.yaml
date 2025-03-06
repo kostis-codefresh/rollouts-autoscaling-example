@@ -31,8 +31,7 @@ spec:
       containers:
         - name: cost-demo
           image: ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v1
-          # image: kostiscodefresh/summer-of-k8s-app:v2
-          # image: kostiscodefresh/summer-of-k8s-app:v3           
+          # image: ghcr.io/kostis-codefresh/rollouts-autoscaling-example:v2              
           ports:
             - name: http
               containerPort: 8080
