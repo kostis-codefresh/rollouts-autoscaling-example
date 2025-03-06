@@ -18,6 +18,7 @@ Table of contents
 1. [Example 06 - Canary without Traffic manager](#example-06---canary-without-traffic-manager)
 1. [Example 07 - Canary with dynamic scaling](#example-07---canary-with-dynamic-scaling)
 1. [Example 08 - Canary with decoupled traffic split](#example-08---canary-with-decoupled-traffic-split)
+1. [Example 09 - Canary with autoscaling](#example-09---canary-with-autoscaling)
 
 ## Prerequisites
 
