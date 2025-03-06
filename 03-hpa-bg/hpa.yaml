@@ -12,9 +12,22 @@ spec:
         name: memory
         target:
           type: AverageValue
-          averageValue: 64Mi      
+          averageValue: 16Mi      
   minReplicas: 1
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
     name: 03-hpa-bg
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15     
