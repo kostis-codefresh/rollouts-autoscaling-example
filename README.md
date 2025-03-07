@@ -52,7 +52,8 @@ chmod +x ./kubectl-argo-rollouts-linux-amd64
 sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
 ```
 
-Install the Metric Server for all HPA examples
+
+If your local cluster doesn't have metrics then install [the Metrics Server](https://github.com/kubernetes-sigs/metrics-server) for all HPA examples:
 
 ```
 cd metrics-072
@@ -63,7 +64,7 @@ kubectl top nodes
 
 The last command should show you metrics for your nodes.
 
-Install Traefik 2.x for the all the canary examples
+Install Traefik 2.x for the all the canary examples. If your local cluster already has Traefik 2.x pre-installed you can skip this step.
 
 ```
 helm repo add traefik https://traefik.github.io/charts
